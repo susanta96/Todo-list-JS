@@ -30,7 +30,9 @@ function newTask(e) {
   const task = document.getElementById('addtask').value;
 
   //Create the checked button
-  const 
+  const checkBtn = document.createElement('a');
+  checkBtn.classList = 'checked-task';
+  checkBtn.textContent = '✓';
 
   //Create the remove Button
   const removeBtn = document.createElement('a');
@@ -42,7 +44,8 @@ function newTask(e) {
   const li = document.createElement('li');
   li.textContent = task;
 
-
+  //add checked button to each task
+  li.appendChild(checkBtn);
   //add this button to each task
   li.appendChild(removeBtn);
 
@@ -97,6 +100,11 @@ function localStorageOnLoad() {
 
   //Loop through Each task and Print them on li
   tasks.forEach(function (task) {
+    //Create the checked button
+    const checkBtn = document.createElement('a');
+    checkBtn.classList = 'checked-task';
+    checkBtn.textContent = '✓';
+
     //Create the remove Button
     const removeBtn = document.createElement('a');
     removeBtn.classList = 'remove-task';
@@ -107,9 +115,10 @@ function localStorageOnLoad() {
     const li = document.createElement('li');
     li.textContent = task;
 
-
     //add this button to each task
     li.appendChild(removeBtn);
+    //add checked button to each task
+    li.appendChild(checkBtn);
 
     //add to the list
     taskList.appendChild(li);
