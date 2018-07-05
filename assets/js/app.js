@@ -11,6 +11,8 @@ function eventListeners() {
   //Form Submission
   document.querySelector('#form').addEventListener('submit', newTask);
 
+  //Remove tasks from TaskList
+  taskList.addEventListener('click', removeTask);
 }
 
 
@@ -40,7 +42,13 @@ function newTask(e) {
 
   //add to the list
   taskList.appendChild(li);
+}
 
+//Remove the Tasks from the DOM
 
+function removeTask(e) {
+  if (e.target.classList.contains('remove-task')) {
+    e.target.parentElement.remove();
+  }
 }
 
