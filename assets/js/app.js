@@ -42,6 +42,9 @@ function newTask(e) {
 
   //add to the list
   taskList.appendChild(li);
+
+  //call add tasks to local storage
+  addTaskLocalStorage(task);
 }
 
 //Remove the Tasks from the DOM
@@ -52,3 +55,24 @@ function removeTask(e) {
   }
 }
 
+function addTaskLocalStorage(task) {
+  let tasks = getTaskFromStorage();
+
+  //add the tasks into array
+  tasks.push(task);
+
+  //Convert Task array intostring
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function getTaskFromStorage() {
+  let tasks;
+  const tasksLS = localStorage.getItem('tasks');
+  //Get the value, if null is return then create an empty array
+  if (tasksLS === null) {
+    tasks = [];
+  } else {
+    tasks = JSON.parse(tasksLS);
+  }
+  return tasks;
+}
