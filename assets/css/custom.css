@@ -5,8 +5,8 @@ h1, h2 {
 #content {
     margin-top: 40px;
 }
-.remove-tweet,
-.remove-tweet:hover {
+.remove-task,
+.remove-task:hover {
     float: right;
     cursor: pointer;
     color: red;
