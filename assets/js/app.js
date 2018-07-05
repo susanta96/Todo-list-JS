@@ -13,6 +13,9 @@ function eventListeners() {
 
   //Remove tasks from TaskList
   taskList.addEventListener('click', removeTask);
+
+  //Document
+  document.addEventListener('DOMContentLoaded', localStorageOnLoad);
 }
 
 
@@ -75,4 +78,29 @@ function getTaskFromStorage() {
     tasks = JSON.parse(tasksLS);
   }
   return tasks;
+}
+
+//Print LocalStorage Tasks On Load
+function localStorageOnLoad() {
+  let tasks = getTaskFromStorage();
+
+  //Loop through Each task and Print them on li
+  tasks.forEach(function (task) {
+    //Create the remove Button
+    const removeBtn = document.createElement('a');
+    removeBtn.classList = 'remove-task';
+    removeBtn.textContent = 'X';
+
+
+    //Create <li>
+    const li = document.createElement('li');
+    li.textContent = task;
+
+
+    //add this button to each task
+    li.appendChild(removeBtn);
+
+    //add to the list
+    taskList.appendChild(li);
+  });
 }
