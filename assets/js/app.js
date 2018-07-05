@@ -29,6 +29,9 @@ function newTask(e) {
   //Catch the Textarea value
   const task = document.getElementById('addtask').value;
 
+  //Create the checked button
+  const 
+
   //Create the remove Button
   const removeBtn = document.createElement('a');
   removeBtn.classList = 'remove-task';
@@ -48,6 +51,11 @@ function newTask(e) {
 
   //call add tasks to local storage
   addTaskLocalStorage(task);
+
+  //Print aleart
+  alert('Task added!');
+
+  this.reset();
 }
 
 //Remove the Tasks from the DOM
@@ -56,6 +64,9 @@ function removeTask(e) {
   if (e.target.classList.contains('remove-task')) {
     e.target.parentElement.remove();
   }
+
+  //Remove from Storage 
+  removeTaskLocalStorage(e.target.parentElement.textContent);
 }
 
 function addTaskLocalStorage(task) {
@@ -103,4 +114,27 @@ function localStorageOnLoad() {
     //add to the list
     taskList.appendChild(li);
   });
+}
+
+//Remove the Task from Local Storage
+
+function removeTaskLocalStorage(task) {
+  //Get Tasks from storage
+  let tasks = getTaskFromStorage();
+
+  //Remove the X from the remove button
+
+  const taskDelete = task.substring(0, task.length - 1);
+  // console.log(taskDelete);
+
+  //Look through the all tasks & delete them
+  tasks.forEach(function (taskLS, index) {
+    if (taskDelete === taskLS) {
+      tasks.splice(index, 1);
+    }
+  });
+
+  //Save the new array data to Local Storage
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+
 }

@@ -12,3 +12,11 @@ h1, h2 {
     color: red;
     font-weight: bold;
 }
+
+.checked-task,
+.checked-task:hover {
+    cursor: pointer;
+    color: grey;
+    
+    text-decoration-line: line-through;
+}
