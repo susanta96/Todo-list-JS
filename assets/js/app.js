@@ -1,6 +1,6 @@
 //variables
 const taskList = document.getElementById('task-list');
-
+const checkList = document.getElementById('checked-list');
 
 
 
@@ -10,6 +10,9 @@ eventListeners();
 function eventListeners() {
   //Form Submission
   document.querySelector('#form').addEventListener('submit', newTask);
+
+  //Remove tasks from TaskList
+  taskList.addEventListener('click', completeTask);
 
   //Remove tasks from TaskList
   taskList.addEventListener('click', removeTask);
@@ -44,10 +47,11 @@ function newTask(e) {
   const li = document.createElement('li');
   li.textContent = task;
 
-  //add checked button to each task
-  li.appendChild(checkBtn);
+
   //add this button to each task
   li.appendChild(removeBtn);
+  //add checked button to each task
+  li.appendChild(checkBtn);
 
   //add to the list
   taskList.appendChild(li);
@@ -146,4 +150,36 @@ function removeTaskLocalStorage(task) {
   //Save the new array data to Local Storage
   localStorage.setItem('tasks', JSON.stringify(tasks));
 
+}
+
+function completeTask(e) {
+  if (e.target.classList.contains('checked-task')) {
+    let taskText = e.target.parentElement.textContent;
+    let taskDone = taskText.substring(0, taskText.length - 2);
+    // console.log(taskDone);
+    //Create the remove Button
+    const removeBtn = document.createElement('a');
+    removeBtn.classList = 'remove-task';
+    removeBtn.textContent = 'X';
+
+
+    //Create <li>
+    const li = document.createElement('li');
+    li.textContent = taskDone;
+
+    //add this button to each task
+    li.appendChild(removeBtn);
+
+
+    //add to the list
+    checkList.appendChild(li);
+    checkList.classList ='complete-task';
+
+    //remove from todo list
+    e.target.parentElement.remove();
+
+    //Remove from Storage 
+    removeTaskLocalStorage(e.target.parentElement.textContent);
+
+  }
 }
