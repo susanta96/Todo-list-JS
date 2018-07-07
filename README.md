@@ -6,6 +6,10 @@ It's a JavaScript Based small Project with allowing features of LocalStorage to 
 [Demo](https://susanta96.github.io/Todo-list-JS) 
 
 
+``` 
+Still we also have to work more on this to get the proper completed task section ```
+
+
 
 
 
