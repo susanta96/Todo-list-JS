@@ -1,8 +1,8 @@
-## Welcome to GitHub Pages
+## Welcome to Todo-List 
 
-You can use the [editor on GitHub](https://github.com/susanta96/Todo-list-JS/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+It's a JavaScript Based small Project with allowing features of LocalStorage to use properly. How we can save Data into localStorage and delete them . Also We use DOM Scripting & Event Listener feature of JS. 
 
-
+### For an idea see this : 
 [Demo](https://susanta96.github.io/Todo-list-JS) 
 
 
