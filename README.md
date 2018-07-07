@@ -7,7 +7,7 @@ It's a JavaScript Based small Project with allowing features of LocalStorage to 
 
 
 ``` 
-Still we also have to work more on this to get the proper completed task section ```
+Still we also have to work more on this to get the proper completed task section
 
 
 
