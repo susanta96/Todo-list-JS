@@ -6,35 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="robots" content="noindex" />
-    <title>Todo-List using LocalStorage</title>
+    <title>Offline To Do</title>
 </head>
 
-<body>
-
-    <div id="content">
-        <div class="container">
-            <h1>Todo-List</h1>
-            <div class="row">
-                <div class="six columns">
-                    <label for="addtask">Add Task:</label>
-                    <form action="#" id="form">
-                        <label for="addtask"></label>
-                        <textarea id="addtask" class="u-full-width"></textarea>
-                        <input type="submit" class="button u-full-width button-primary" value="Add Task">
-                    </form>
-                </div>
-                <!--.six-->
-                <div class="six columns">
-                    <h2>All Tasks</h2>
-                    <div id="task-list"></div>
-                    <hr />
-                    <center>
-                        <h5>Completed Tasks</h5>
-                    </center>
-                    <div id="checked-list"></div>
-                </div>
-                <!--.six-->
+<body class="bg-slate-100">
+    <div class="container mx-auto mt-11">
+        <h1 class="text-4xl text-cyan-500 font-bold">Todo-List</h1>
+        <div class="grid lg:grid-cols-2 gap-4 pt-10">
+            <div class="w-full md:max-w-xl mx-auto block">
+                <form action="#" id="form">
+                    <textarea id="addtask" class="w-full border-2 rounded-sm shadow-sm mt-2 p-2" style="height: 120px;"></textarea>
+                    <input type="submit" class="btn-primary" value="Add Task">
+                </form>
             </div>
+            <div class="card mx-auto self-start p-3">
+                <div class="mx-auto mb-3">
+                    <h4 class="text-xl text-black font-serif font-semibold">Pending Tasks</h4>
+                </div>
+                <ul id="task-list"></ul>
+                <hr class="my-3"/>
+                <div class="mx-auto mb-3">
+                    <h4 class="text-xl text-black font-serif font-semibold">Completed Tasks</h4>
+                </div>
+                <ul id="checked-list"></ul>
+            </div>
+            <!--.six-->
         </div>
     </div>
 </body>
