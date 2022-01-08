@@ -1,8 +1,8 @@
 {
   "name": "todo-list-js",
-  "version": "1.0.0",
-  "description": "It's a JavaScript Based small Project with allowing features of LocalStorage to use properly. How we can save Data into localStorage and delete them . Also We use DOM Scripting & Event Listener feature of JS.",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "It's a JavaScript Based small Project with allowing features of IndexDB to use properly. How we can save Data into IndexDB and delete them . Also We use DOM Scripting & Event Listener feature of JS.",
+  "main": "dist/index.html",
   "scripts": {
     "dev": "webpack-dev-server --config webpack.dev.js --open",
     "start": "webpack --config webpack.prod.js"
@@ -11,8 +11,12 @@
     "type": "git",
     "url": "git+https://github.com/susanta96/Todo-list-JS.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["todo", "localstorage", "indexedDB", "tailwindcss"],
+  "author": {
+    "name": "Susanta Chakraborty",
+    "email": "susant.vanu7278@gmail.com",
+    "url": "https://susanta96.nft"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/susanta96/Todo-list-JS/issues"

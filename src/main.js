@@ -1,5 +1,5 @@
 import './style.css';
-import { formatDistance, subDays } from 'date-fns';
+import { formatDistance } from 'date-fns';
 //  indexedDB Connection 
 (function() {
 
@@ -11,6 +11,8 @@ import { formatDistance, subDays } from 'date-fns';
   databaseOpen(function() {
     input = document.getElementById('addtask');
     document.querySelector('#form').addEventListener('submit', onSubmit);
+    taskList.addEventListener('click', clickToComplete);
+    checkList.addEventListener('click', clickToDelete);
     databaseTodosGet(renderAllTodos);
   });
 
@@ -21,9 +23,9 @@ import { formatDistance, subDays } from 'date-fns';
       return;
     }else {
       databaseTodosAdd(input.value, function() {
+        databaseTodosGet(renderAllTodos);
         input.value = '';
       });
-      databaseTodosGet(renderAllTodos);
     }
   }
 
@@ -50,11 +52,40 @@ import { formatDistance, subDays } from 'date-fns';
     console.error('An IndexedDB error has occurred', e);
   }
 
+  function clickToComplete(e) {
+    
+    if (e.target.hasAttribute('id')) {
+      databaseTodosUpdate(parseInt(e.target.getAttribute('id'), 10), function() {
+        // Refresh the to-do list
+        databaseTodosGet(renderAllTodos);
+      });
+    }else if(e.target.parentElement.hasAttribute('id')) {
+       databaseTodosUpdate(parseInt(e.target.parentNode.getAttribute('id'), 10), function() {
+        // Refresh the to-do list
+        databaseTodosGet(renderAllTodos);
+      });
+    }
+  }
+  function clickToDelete(e) {
+    if (e.target.hasAttribute('id')) {
+      databaseTodosDelete(parseInt(e.target.getAttribute('id'), 10), function() {
+        // Refresh the to-do list
+        databaseTodosGet(renderAllTodos);
+      });
+    }else if(e.target.parentElement.hasAttribute('id')) {
+       databaseTodosDelete(parseInt(e.target.parentNode.getAttribute('id'), 10), function() {
+        // Refresh the to-do list
+        databaseTodosGet(renderAllTodos);
+      });
+    }
+  }
+
   function databaseTodosAdd(text, callback) {
     var transaction = db.transaction(['todo'], 'readwrite');
     var store = transaction.objectStore('todo');
     var request = store.put({
       text: text,
+      completed: false,
       timeStamp: Date.now()
     });
 
@@ -64,29 +95,6 @@ import { formatDistance, subDays } from 'date-fns';
     request.onerror = databaseError;
   }
 
-      //Create the checked button
-      // const checkBtn = document.createElement('a');
-      // checkBtn.classList = 'checked-task';
-      // checkBtn.textContent = '✓';
-    
-      // //Create the remove Button
-      // const removeBtn = document.createElement('a');
-      // removeBtn.classList = 'remove-task';
-      // removeBtn.textContent = 'X';
-    
-    
-      // //Create <li>
-      // const li = document.createElement('li');
-      // li.textContent = task;
-    
-    
-      // //add this button to each task
-      // li.appendChild(removeBtn);
-      // //add checked button to each task
-      // li.appendChild(checkBtn);
-    
-      // //add to the list
-      // taskList.appendChild(li);
 
   function databaseTodosGet(callback) {
     var transaction = db.transaction(['todo'], 'readonly');
@@ -100,180 +108,87 @@ import { formatDistance, subDays } from 'date-fns';
     // collect the data in an array (data), and pass it in the
     // callback in one go.
     var data = [];
+    var completedTodos = [];
     cursorRequest.onsuccess = function(e) {
       var result = e.target.result;
-
+    
       // If there's data, add it to array
       if (result) {
-        data.push(result.value);
+        if(result.value.completed) {
+          completedTodos.push(result.value);
+        }else {
+          data.push(result.value);
+        }
         result.continue();
 
       // Reach the end of the data
       } else {
-        callback(data);
+        callback(data, completedTodos);
       }
     };
   }
 
-  function renderAllTodos(todos) {
+  function databaseTodosDelete(id, callback) {
+    let transaction = db.transaction(['todo'], 'readwrite');
+    let store = transaction.objectStore('todo');
+    let request = store.delete(id);
+    transaction.oncomplete = function(e) {
+      callback();
+    };
+    request.onerror = databaseError;
+  }
+
+  function databaseTodosUpdate(id, callback) {
+    let transaction = db.transaction(['todo'], 'readwrite');
+    let store = transaction.objectStore('todo');
+    //get the task data
+    let task = store.get(id);
+    
+    transaction.oncomplete = function(e) {
+      databaseUpdate(task.result, id, callback);
+    };
+    task.onerror = databaseError;
+
+  }
+
+  function databaseUpdate(todo, id, callback){
+    let transaction = db.transaction(['todo'], 'readwrite');
+    let store = transaction.objectStore('todo');
+
+    let request = store.put({
+      text: todo.text,
+      completed: true,
+      timeStamp: Date.now()
+    });
+
+    transaction.oncomplete = function(e) {
+      databaseTodosDelete(id, callback)
+    };
+    request.onerror = databaseError;
+  }
+
+  function renderAllTodos(todos, completedTodos) {
     var html = '';
     todos.forEach(function(todo) {
       html += todoToHtml(todo);
     });
     taskList.innerHTML = html;
+
+    var completed = '';
+    completedTodos.forEach(function(todo) {
+      completed += completedtodoToHtml(todo);
+    })
+    checkList.innerHTML = completed;
   }
 
   function todoToHtml(todo) {
     return '<li class="todo-item"><div class="round-box"></div><div><p class="todo-task">'+todo.text+'</p><span class="todo-time">' + 
-    formatDistance(new Date(todo.timeStamp), new Date(), {addSuffix: true}) + '</span></div></li>';
+    formatDistance(new Date(todo.timeStamp), new Date(), {addSuffix: true}) + '</span></div><button class="check-icon" id="' + todo.timeStamp + '"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></button></li>';
+  }
+
+  function completedtodoToHtml(todo) {
+    return '<li class="todo-item opacity-50"><div class="check-box"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div><p class="todo-task line-through">'+todo.text+'</p><span class="todo-time line-through">' + 
+    formatDistance(new Date(todo.timeStamp), new Date(), {addSuffix: true}) + '</span></div><button class="delete-icon" id="' + todo.timeStamp + '"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>';
   }
 
 }());
-
-
-
-
-
-
-
-// //Event Listeners
-// eventListeners();
-
-// function eventListeners() {
-//   //Form Submission
-//   document.querySelector('#form').addEventListener('submit', newTask);
-
-//   //Remove tasks from TaskList
-//   taskList.addEventListener('click', completeTask);
-
-//   //Remove tasks from TaskList
-//   taskList.addEventListener('click', removeTask);
-
-//   //Document
-//   document.addEventListener('DOMContentLoaded', localStorageOnLoad);
-// }
-
-
-
-
-// //Functions
-
-
-// //Remove the Tasks from the DOM
-
-// function removeTask(e) {
-//   if (e.target.classList.contains('remove-task')) {
-//     e.target.parentElement.remove();
-//   }
-
-//   //Remove from Storage 
-//   removeTaskLocalStorage(e.target.parentElement.textContent);
-// }
-
-// function addTaskLocalStorage(task) {
-//   let tasks = getTaskFromStorage();
-
-//   //add the tasks into array
-//   tasks.push(task);
-
-//   //Convert Task array intostring
-//   localStorage.setItem('tasks', JSON.stringify(tasks));
-// }
-
-// function getTaskFromStorage() {
-//   let tasks;
-//   const tasksLS = localStorage.getItem('tasks');
-//   //Get the value, if null is return then create an empty array
-//   if (tasksLS === null) {
-//     tasks = [];
-//   } else {
-//     tasks = JSON.parse(tasksLS);
-//   }
-//   return tasks;
-// }
-
-// //Print LocalStorage Tasks On Load
-// function localStorageOnLoad() {
-//   let tasks = getTaskFromStorage();
-
-//   //Loop through Each task and Print them on li
-//   tasks.forEach(function (task) {
-//     //Create the checked button
-//     const checkBtn = document.createElement('a');
-//     checkBtn.classList = 'checked-task';
-//     checkBtn.textContent = '✓';
-
-//     //Create the remove Button
-//     const removeBtn = document.createElement('a');
-//     removeBtn.classList = 'remove-task';
-//     removeBtn.textContent = 'X';
-
-
-//     //Create <li>
-//     const li = document.createElement('li');
-//     li.textContent = task;
-
-//     //add this button to each task
-//     li.appendChild(removeBtn);
-//     //add checked button to each task
-//     li.appendChild(checkBtn);
-
-//     //add to the list
-//     taskList.appendChild(li);
-//   });
-// }
-
-// //Remove the Task from Local Storage
-
-// function removeTaskLocalStorage(task) {
-//   //Get Tasks from storage
-//   let tasks = getTaskFromStorage();
-
-//   //Remove the X from the remove button
-
-//   const taskDelete = task.substring(0, task.length - 1);
-//   // console.log(taskDelete);
-
-//   //Look through the all tasks & delete them
-//   tasks.forEach(function (taskLS, index) {
-//     if (taskDelete === taskLS) {
-//       tasks.splice(index, 1);
-//     }
-//   });
-
-//   //Save the new array data to Local Storage
-//   localStorage.setItem('tasks', JSON.stringify(tasks));
-
-// }
-
-// function completeTask(e) {
-//   if (e.target.classList.contains('checked-task')) {
-//     let taskText = e.target.parentElement.textContent;
-//     let taskDone = taskText.substring(0, taskText.length - 2);
-//     // console.log(taskDone);
-//     //Create the remove Button
-//     const removeBtn = document.createElement('a');
-//     removeBtn.classList = 'remove-task';
-//     removeBtn.textContent = 'X';
-
-
-//     //Create <li>
-//     const li = document.createElement('li');
-//     li.textContent = taskDone;
-
-//     //add this button to each task
-//     li.appendChild(removeBtn);
-
-
-//     //add to the list
-//     checkList.appendChild(li);
-//     checkList.classList ='complete-task';
-
-//     //remove from todo list
-//     e.target.parentElement.remove();
-
-//     //Remove from Storage 
-//     removeTaskLocalStorage(e.target.parentElement.textContent);
-
-//   }
-// }
